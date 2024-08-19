@@ -1,7 +1,174 @@
 echo "# Data" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/Fel9090/Fel.git
-git push -u origin main
+import numpy as np
+
+
+
+# Constants
+
+EMPTY = 0
+
+BLACK = 1
+
+WHITE = 2
+
+BOARD_SIZE = 15
+
+
+
+class GobangGame:
+
+    def __init__(self):
+
+        self.board = np.zeros((BOARD_SIZE, BOARD_SIZE), dtype=int)
+
+        self.current_player = BLACK  # Start with black
+
+
+
+    def print_board(self):
+
+        for row in self.board:
+
+            print(" ".join(["●" if cell == BLACK else "○" if cell == WHITE else "·" for cell in row]))
+
+
+
+    def place_piece(self, row, col):
+
+        if self.board[row, col] == EMPTY:
+
+            self.board[row, col] = self.current_player
+
+            return True
+
+        else:
+
+            return False
+
+
+
+    def check_win(self):
+
+        # Check horizontal
+
+        for r in range(BOARD_SIZE):
+
+            for c in range(BOARD_SIZE - 4):
+
+                if self.board[r, c] == self.board[r, c+1] == self.board[r, c+2] == self.board[r, c+3] == self.board[r, c+4] != EMPTY:
+
+                    return True
+
+
+
+        # Check vertical
+
+        for c in range(BOARD_SIZE):
+
+            for r in range(BOARD_SIZE - 4):
+
+                if self.board[r, c] == self.board[r+1, c] == self.board[r+2, c] == self.board[r+3, c] == self.board[r+4, c] != EMPTY:
+
+                    return True
+
+
+
+        # Check diagonal (top-left to bottom-right)
+
+        for r in range(BOARD_SIZE - 4):
+
+            for c in range(BOARD_SIZE - 4):
+
+                if self.board[r, c] == self.board[r+1, c+1] == self.board[r+2, c+2] == self.board[r+3, c+3] == self.board[r+4, c+4] != EMPTY:
+
+                    return True
+
+
+
+        # Check diagonal (top-right to bottom-left)
+
+        for r in range(4, BOARD_SIZE):
+
+            for c in range(BOARD_SIZE - 4):
+
+                if self.board[r, c] == self.board[r-1, c+1] == self.board[r-2, c+2] == self.board[r-3, c+3] == self.board[r-4, c+4] != EMPTY:
+
+                    return True
+
+
+
+        return False
+
+
+
+    def switch_player(self):
+
+        if self.current_player == BLACK:
+
+            self.current_player = WHITE
+
+        else:
+
+            self.current_player = BLACK
+
+
+
+    def play_game(self):
+
+        while True:
+
+            print(f"Current Player: {'Black' if self.current_player == BLACK else 'White'}")
+
+            self.print_board()
+
+
+
+            try:
+
+                row = int(input("Enter row (0-14): "))
+
+                col = int(input("Enter column (0-14): "))
+
+            except ValueError:
+
+                print("Invalid input. Please enter numbers.")
+
+                continue
+
+
+
+            if row < 0 or row >= BOARD_SIZE or col < 0 or col >= BOARD_SIZE:
+
+                print("Out of range. Please enter row and column within 0-14.")
+
+                continue
+
+
+
+            if not self.place_piece(row, col):
+
+                print("Invalid move. That position is already taken.")
+
+                continue
+
+
+
+            if self.check_win():
+
+                self.print_board()
+
+                print(f"{'Black' if self.current_player == WHITE else 'White'} wins!")
+
+                break
+
+
+
+            self.switch_player()
+
+
+
+if __name__ == "__main__":
+
+    game = GobangGame()
+
+    game.play_game()
